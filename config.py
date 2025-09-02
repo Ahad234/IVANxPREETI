@@ -101,14 +101,30 @@ HELP_IMG_URL = [
     "ANNIEMUSIC/assets/annie/st6.png"
 ]
 
-PING_VID_URL = "\ANNIEMUSIC/assets/annie/ping.png"
-PLAYLIST_IMG_URL = "ANNIEMUSIC/assets/annie/st8.png"
-STATS_VID_URL = "ANNIEMUSIC/assets/annie/stats.png"
-TELEGRAM_AUDIO_URL = "ANNIEMUSIC/assets/annie/st3.png"
-TELEGRAM_VIDEO_URL = "ANNIEMUSIC/assets/annie/st1.png"
-STREAM_IMG_URL = "ANNIEMUSIC/assets/annie/st5.png"
-SOUNCLOUD_IMG_URL = "ANNIEMUSIC/assets/annie/st11.png"
-YOUTUBE_IMG_URL = "ANNIEMUSIC/assets/annie/st4.png"
+PING_VID_URL = [
+    "ANNIEMUSIC/assets/annie/ping.png"
+]
+PLAYLIST_IMG_URL = [ 
+    "ANNIEMUSIC/assets/annie/st8.png"
+]
+STATS_VID_URL = [ 
+    "ANNIEMUSIC/assets/annie/stats.png"
+]
+TELEGRAM_AUDIO_URL = [
+    "ANNIEMUSIC/assets/annie/st3.png"
+]
+TELEGRAM_VIDEO_URL = [
+    "ANNIEMUSIC/assets/annie/st1.png"
+]
+STREAM_IMG_URL = [
+    "ANNIEMUSIC/assets/annie/st5.png"
+]
+SOUNCLOUD_IMG_URL = [
+    "ANNIEMUSIC/assets/annie/st11.png"
+]
+YOUTUBE_IMG_URL = [
+    "ANNIEMUSIC/assets/annie/st4.png"
+]
 SPOTIFY_ARTIST_IMG_URL = SPOTIFY_ALBUM_IMG_URL = SPOTIFY_PLAYLIST_IMG_URL = YOUTUBE_IMG_URL
 
 # ───── Utility & Functional ───── #
