@@ -16,7 +16,7 @@ async def waifu_command_handler(_, message: Message):
             image = waifu_data['images'][0]
             await message.reply_photo(
                 photo=image["url"],
-                caption=f"🌸 ʜᴇʀᴇ'ꜱ ʏᴏᴜʀ ᴡᴀɪꜰᴜ ({tag})"
+                caption=f"🌸 ʜᴇʀᴇ'ꜱ ʏᴏᴜʀ ᴡᴀɪꜰᴜ {tag}."
             )
         else:
             await message.reply_text("❌ ɴᴏ ᴡᴀɪꜰᴜꜱ ꜰᴏᴜɴᴅ ᴡɪᴛʜ ᴛʜᴀᴛ ᴛᴀɢ.")
