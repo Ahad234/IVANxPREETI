@@ -105,7 +105,6 @@ async def start_pm(client, message: Message, _):
                 video=thumbnail,
                 caption=searched_text,
                 reply_markup=key,
-                message_effect_id=random.choice(EFFECT_ID),
             )
             if await is_on_off(2):
                 await app.send_message(
@@ -126,7 +125,7 @@ async def start_pm(client, message: Message, _):
                 message.from_user.mention, app.mention, UP, DISK, CPU, RAM, served_users, served_chats
             ),
             reply_markup=InlineKeyboardMarkup(out),
-            message_effect_id=random.choice(EFFECT_ID),
+            message_effect_id=5107584321108051014,
         )
         if await is_on_off(2):
             await app.send_message(
@@ -144,7 +143,7 @@ async def start_gp(client, message: Message, _):
         video=random.choice(START_VIDS),
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
-        message_effect_id=random.choice(EFFECT_ID),
+        message_effect_id=5107584321108051014,
     )
     return await add_served_chat(message.chat.id)
 
