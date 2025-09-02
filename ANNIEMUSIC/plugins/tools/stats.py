@@ -23,11 +23,25 @@ from config import BANNED_USERS
 @language
 async def stats_global(client, message: Message, _):
     upl = stats_buttons(_, True if message.from_user.id in SUDOERS else False)
-    await message.reply_video(
-        video=config.STATS_VID_URL,
-        caption=_["gstats_2"].format(app.mention),
-        reply_markup=upl,
-    )
+    try:
+        await message.reply_video(
+            video=config.STATS_VID_URL,
+            caption=_["gstats_2"].format(app.mention),
+            reply_markup=upl,
+        )
+    except Exception:
+        # fallback if not video
+        if str(config.STATS_VID_URL).endswith((".jpg", ".jpeg", ".png")):
+            await message.reply_photo(
+                photo=config.STATS_VID_URL,
+                caption=_["gstats_2"].format(app.mention),
+                reply_markup=upl,
+            )
+        else:
+            await message.reply_text(
+                text=_["gstats_2"].format(app.mention),
+                reply_markup=upl,
+            )
 
 
 @app.on_callback_query(filters.regex("stats_back") & ~BANNED_USERS)
@@ -67,9 +81,19 @@ async def overall_stats(client, CallbackQuery, _):
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except MessageIdInvalid:
-        await CallbackQuery.message.reply_video(
-            video=config.STATS_VID_URL, caption=text, reply_markup=upl
-        )
+        try:
+            await CallbackQuery.message.reply_video(
+                video=config.STATS_VID_URL, caption=text, reply_markup=upl
+            )
+        except Exception:
+            if str(config.STATS_VID_URL).endswith((".jpg", ".jpeg", ".png")):
+                await CallbackQuery.message.reply_photo(
+                    photo=config.STATS_VID_URL, caption=text, reply_markup=upl
+                )
+            else:
+                await CallbackQuery.message.reply_text(
+                    text=text, reply_markup=upl
+                )
 
 
 @app.on_callback_query(filters.regex("bot_stats_sudo"))
@@ -130,6 +154,16 @@ async def bot_stats(client, CallbackQuery, _):
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except MessageIdInvalid:
-        await CallbackQuery.message.reply_video(
-            video=config.STATS_VID_URL, caption=text, reply_markup=upl
-        )
+        try:
+            await CallbackQuery.message.reply_video(
+                video=config.STATS_VID_URL, caption=text, reply_markup=upl
+            )
+        except Exception:
+            if str(config.STATS_VID_URL).endswith((".jpg", ".jpeg", ".png")):
+                await CallbackQuery.message.reply_photo(
+                    photo=config.STATS_VID_URL, caption=text, reply_markup=upl
+                )
+            else:
+                await CallbackQuery.message.reply_text(
+                    text=text, reply_markup=upl
+                )
