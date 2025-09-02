@@ -28,6 +28,13 @@ from ANNIEMUSIC.utils.inline.help import first_page
 from config import BANNED_USERS, AYUV, HELP_IMG_URL, START_VIDS, STICKERS
 from strings import get_string
 
+EFFECT_ID = [
+    "5046509860389126442",
+    "5107584321108051014",
+    "5104841245755180586",
+    "5159385139981059251"
+]
+
 async def delete_sticker_after_delay(message, delay):
     await asyncio.sleep(delay)
     await message.delete()
@@ -102,6 +109,7 @@ async def start_pm(client, message: Message, _):
                 message.from_user.mention, app.mention, UP, DISK, CPU, RAM, served_users, served_chats
             ),
             reply_markup=InlineKeyboardMarkup(out),
+            message_effect_id=random.choice(EFFECT_ID),
         )
         if await is_on_off(2):
             await app.send_message(
@@ -118,6 +126,7 @@ async def start_gp(client, message: Message, _):
         random.choice(START_VIDS),
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
+        message_effect_id=random.choice(EFFECT_ID),
     )
     return await add_served_chat(message.chat.id)
 
@@ -157,6 +166,7 @@ async def welcome(client, message: Message):
                         app.mention,
                     ),
                     reply_markup=InlineKeyboardMarkup(out),
+                    message_effect_id=random.choice(EFFECT_ID),
                 )
                 await add_served_chat(message.chat.id)
                 await message.stop_propagation()
