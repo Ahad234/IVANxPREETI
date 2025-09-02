@@ -16,12 +16,12 @@
     "API_ID": {
       "description": "Telegram API ID, available at https://my.telegram.org. Required to connect the bot to Telegram servers.",
       "required": true,
-      "value": ""
+      "value": "29308061"
     },
     "API_HASH": {
       "description": "Telegram API Hash, available at https://my.telegram.org. Required alongside API ID.",
       "required": true,
-      "value": ""
+      "value": "462de3dfc98fd938ef9c6ee31a72d099"
     },
     "BOT_TOKEN": {
       "description": "Bot Token from BotFather after creating your Telegram bot.",
@@ -31,12 +31,12 @@
     "MONGO_DB_URI": {
       "description": "MongoDB database connection URI, used for storing user and bot-related data. Get it from https://cloud.mongodb.com.",
       "required": true,
-      "value": ""
+      "value": "mongodb+srv://cardiomusic4:cardiomusic4@cluster0.4n3ee1d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     },
     "OWNER_ID": {
       "description": "Your Telegram numeric user ID (use @userinfobot to find it). Multiple IDs can be separated by a space.",
       "required": true,
-      "value": ""
+      "value": "7694170809"
     },
     "STRING_SESSION": {
       "description": "Pyrogram v2 session string. Generate it securely from https://telegram.tools/session-string-generator#pyrogram.",
@@ -46,7 +46,7 @@
     "LOGGER_ID": {
       "description": "Chat ID of your log group where the bot sends important logs. Make sure the bot is admin in that group.",
       "required": true,
-      "value": ""
+      "value": "-1002681848382"
     },
     "COOKIE_URL": {
       "description": "Direct raw link (from Batbin or Pastebin) to your YouTube cookies.txt file for better download support.",
