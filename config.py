@@ -42,8 +42,8 @@ HEROKU_API_KEY = getenv("HEROKU_API_KEY")
 
 # ───── Git & Updates ───── #
 UPSTREAM_REPO = getenv("UPSTREAM_REPO", "https://github.com/Nobi-123/ZERATHOSxMUSIC")
-UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "Main")
-GIT_TOKEN = getenv("GIT_TOKEN")
+UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
+GIT_TOKEN = getenv("GIT_TOKEN", "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")
 
 # ───── Support & Community ───── #
 SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/botXjarvis")
