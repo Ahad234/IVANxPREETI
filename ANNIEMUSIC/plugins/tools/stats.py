@@ -5,7 +5,7 @@ import psutil
 from pyrogram import __version__ as pyrover
 from pyrogram import filters
 from pyrogram.errors import MessageIdInvalid
-from pyrogram.types import InputMediaVideo, Message
+from pyrogram.types import InputMediaPhoto, Message
 from pytgcalls.__version__ import __version__ as pytgver
 
 import config
@@ -18,30 +18,18 @@ from ANNIEMUSIC.utils.decorators.language import language, languageCB
 from ANNIEMUSIC.utils.inline.stats import back_stats_buttons, stats_buttons
 from config import BANNED_USERS
 
+STATS_IMG_PATH = "ANNIEMUSIC/assets/annie/stats.png"
+
 
 @app.on_message(filters.command(["stats", "gstats"]) & ~BANNED_USERS)
 @language
 async def stats_global(client, message: Message, _):
     upl = stats_buttons(_, True if message.from_user.id in SUDOERS else False)
-    try:
-        await message.reply_video(
-            video=config.STATS_VID_URL,
-            caption=_["gstats_2"].format(app.mention),
-            reply_markup=upl,
-        )
-    except Exception:
-        # fallback if not video
-        if str(config.STATS_VID_URL).endswith((".jpg", ".jpeg", ".png")):
-            await message.reply_photo(
-                photo=config.STATS_VID_URL,
-                caption=_["gstats_2"].format(app.mention),
-                reply_markup=upl,
-            )
-        else:
-            await message.reply_text(
-                text=_["gstats_2"].format(app.mention),
-                reply_markup=upl,
-            )
+    await message.reply_photo(
+        photo=STATS_IMG_PATH,
+        caption=_["gstats_2"].format(app.mention),
+        reply_markup=upl,
+    )
 
 
 @app.on_callback_query(filters.regex("stats_back") & ~BANNED_USERS)
@@ -77,23 +65,13 @@ async def overall_stats(client, CallbackQuery, _):
         config.AUTO_LEAVING_ASSISTANT,
         config.DURATION_LIMIT_MIN,
     )
-    med = InputMediaVideo(media=config.STATS_VID_URL, caption=text)
+    med = InputMediaPhoto(media=STATS_IMG_PATH, caption=text)
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except MessageIdInvalid:
-        try:
-            await CallbackQuery.message.reply_video(
-                video=config.STATS_VID_URL, caption=text, reply_markup=upl
-            )
-        except Exception:
-            if str(config.STATS_VID_URL).endswith((".jpg", ".jpeg", ".png")):
-                await CallbackQuery.message.reply_photo(
-                    photo=config.STATS_VID_URL, caption=text, reply_markup=upl
-                )
-            else:
-                await CallbackQuery.message.reply_text(
-                    text=text, reply_markup=upl
-                )
+        await CallbackQuery.message.reply_photo(
+            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
+        )
 
 
 @app.on_callback_query(filters.regex("bot_stats_sudo"))
@@ -150,20 +128,10 @@ async def bot_stats(client, CallbackQuery, _):
         call["collections"],
         call["objects"],
     )
-    med = InputMediaVideo(media=config.STATS_VID_URL, caption=text)
+    med = InputMediaPhoto(media=STATS_IMG_PATH, caption=text)
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except MessageIdInvalid:
-        try:
-            await CallbackQuery.message.reply_video(
-                video=config.STATS_VID_URL, caption=text, reply_markup=upl
-            )
-        except Exception:
-            if str(config.STATS_VID_URL).endswith((".jpg", ".jpeg", ".png")):
-                await CallbackQuery.message.reply_photo(
-                    photo=config.STATS_VID_URL, caption=text, reply_markup=upl
-                )
-            else:
-                await CallbackQuery.message.reply_text(
-                    text=text, reply_markup=upl
-                )
+        await CallbackQuery.message.reply_photo(
+            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
+        )
