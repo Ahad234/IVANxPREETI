@@ -1,6 +1,7 @@
 import asyncio
 import random
 import time
+import inspect
 from pyrogram import filters
 from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -38,6 +39,20 @@ EFFECT_ID = [
 async def delete_sticker_after_delay(message, delay):
     await asyncio.sleep(delay)
     await message.delete()
+
+# ---------- Safe reply_video wrapper ----------
+async def safe_reply_video(message: Message, **kwargs):
+    sig = inspect.signature(message.reply_video)
+    if "message_effect_id" not in sig.parameters:
+        kwargs.pop("message_effect_id", None)
+    return await message.reply_video(**kwargs)
+
+async def safe_send_video(chat_id, **kwargs):
+    sig = inspect.signature(app.send_video)
+    if "message_effect_id" not in sig.parameters:
+        kwargs.pop("message_effect_id", None)
+    return await app.send_video(chat_id=chat_id, **kwargs)
+# ----------------------------------------------
 
 @app.on_message(filters.command(["start"]) & filters.private & ~BANNED_USERS)
 @LanguageStart
@@ -85,11 +100,12 @@ async def start_pm(client, message: Message, _):
                 ]
             )
             await m.delete()
-            await app.send_video(
+            await safe_send_video(
                 chat_id=message.chat.id,
                 video=thumbnail,
                 caption=searched_text,
                 reply_markup=key,
+                message_effect_id=random.choice(EFFECT_ID),
             )
             if await is_on_off(2):
                 await app.send_message(
@@ -103,8 +119,9 @@ async def start_pm(client, message: Message, _):
         served_chats = len(await get_served_chats())
         served_users = len(await get_served_users())
         UP, CPU, RAM, DISK = await bot_sys_stats()
-        await message.reply_video(
-            random.choice(START_VIDS),
+        await safe_reply_video(
+            message,
+            video=random.choice(START_VIDS),
             caption=random.choice(AYUV).format(
                 message.from_user.mention, app.mention, UP, DISK, CPU, RAM, served_users, served_chats
             ),
@@ -122,8 +139,9 @@ async def start_pm(client, message: Message, _):
 async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
-    await message.reply_video(
-        random.choice(START_VIDS),
+    await safe_reply_video(
+        message,
+        video=random.choice(START_VIDS),
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
         message_effect_id=random.choice(EFFECT_ID),
@@ -157,8 +175,9 @@ async def welcome(client, message: Message):
                     return await app.leave_chat(message.chat.id)
 
                 out = start_panel(_)
-                await message.reply_video(
-                    random.choice(START_VIDS),
+                await safe_reply_video(
+                    message,
+                    video=random.choice(START_VIDS),
                     caption=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
