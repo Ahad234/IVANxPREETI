@@ -84,12 +84,12 @@ async def handle_mass_confirm(client: Client, callback: CallbackQuery):
     try:
         if cmd == "kickall":
             await _do_kickall(client, chat_id)
-        elif cmd == "banall":
-            await _do_banall(client, chat_id)
+        #elif cmd == "banall":
+        #    await _do_banall(client, chat_id)
         elif cmd == "unbanall":
             await _do_unbanall(client, chat_id)
-        elif cmd == "muteall":
-            await _do_muteall(client, chat_id)
+        #elif cmd == "muteall":
+        #    await _do_muteall(client, chat_id)
         elif cmd == "unmuteall":
             await _do_unmuteall(client, chat_id)
         elif cmd == "unpinall":
