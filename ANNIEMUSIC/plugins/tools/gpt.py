@@ -89,7 +89,7 @@ async def process_query(client: Client, message: Message, tts: bool = False):
 
             resp = requests.post(url, headers=headers, json=payload)
             if resp.status_code != 200:
-                return await message.reply_text(f"⚠️ ElevenLabs TTS failed: {resp.text}")
+                return await message.reply_text(f"⚠️ TTS failed: {resp.text}")
 
             with open(audio_file, "wb") as f:
                 f.write(resp.content)
