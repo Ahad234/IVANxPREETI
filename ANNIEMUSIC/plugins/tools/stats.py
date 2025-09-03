@@ -25,21 +25,33 @@ STATS_IMG_PATH = "ANNIEMUSIC/assets/annie/stats.png"
 @language
 async def stats_global(client, message: Message, _):
     upl = stats_buttons(_, True if message.from_user.id in SUDOERS else False)
-    await message.reply_photo(
-        photo=STATS_IMG_PATH,
-        caption=_["gstats_2"].format(app.mention),
-        reply_markup=upl,
-    )
+    try:
+        await message.reply_photo(
+            photo=STATS_IMG_PATH,
+            caption=_["gstats_2"].format(app.mention),
+            reply_markup=upl,
+        )
+    except Exception:
+        await message.reply_text(
+            text=_["gstats_2"].format(app.mention),
+            reply_markup=upl,
+        )
 
 
 @app.on_callback_query(filters.regex("stats_back") & ~BANNED_USERS)
 @languageCB
 async def home_stats(client, CallbackQuery, _):
     upl = stats_buttons(_, True if CallbackQuery.from_user.id in SUDOERS else False)
-    await CallbackQuery.edit_message_text(
-        text=_["gstats_2"].format(app.mention),
-        reply_markup=upl,
-    )
+    try:
+        await CallbackQuery.edit_message_text(
+            text=_["gstats_2"].format(app.mention),
+            reply_markup=upl,
+        )
+    except Exception:
+        await CallbackQuery.message.reply_text(
+            text=_["gstats_2"].format(app.mention),
+            reply_markup=upl,
+        )
 
 
 @app.on_callback_query(filters.regex("TopOverall") & ~BANNED_USERS)
@@ -68,9 +80,9 @@ async def overall_stats(client, CallbackQuery, _):
     med = InputMediaPhoto(media=STATS_IMG_PATH, caption=text)
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
-    except MessageIdInvalid:
-        await CallbackQuery.message.reply_photo(
-            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
+    except (MessageIdInvalid, Exception):
+        await CallbackQuery.message.reply_text(
+            text=text, reply_markup=upl
         )
 
 
@@ -131,7 +143,7 @@ async def bot_stats(client, CallbackQuery, _):
     med = InputMediaPhoto(media=STATS_IMG_PATH, caption=text)
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
-    except MessageIdInvalid:
-        await CallbackQuery.message.reply_photo(
-            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
+    except (MessageIdInvalid, Exception):
+        await CallbackQuery.message.reply_text(
+            text=text, reply_markup=upl
         )
