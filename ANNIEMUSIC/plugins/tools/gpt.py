@@ -37,7 +37,7 @@ async def safe_gpt_response(prompt: str, timeout: int = 30) -> str:
     try:
         return await asyncio.wait_for(get_gpt_response(prompt), timeout=timeout)
     except asyncio.TimeoutError:
-        raise Exception("⚠️ GPT request timed out. Please try a shorter prompt.")
+        raise Exception(" GPT ʀᴇǫᴜᴇsᴛ ᴛɪᴍᴇᴅ ᴏᴜᴛ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀ sʜᴏʀᴛᴇʀ ᴘʀᴏᴍᴘᴛ.")
     except Exception as e:
         raise Exception(f"❌ GPT Error: {e}")
 
@@ -63,7 +63,7 @@ async def process_query(client: Client, message: Message, tts: bool = False):
     query = message.text.split(" ", 1)[1].strip()
 
     if len(query) > 4000:
-        return await message.reply_text("❌ Your prompt is too long (max 4000 characters). Please shorten it.")
+        return await message.reply_text("❌ Yᴏᴜʀ ᴘʀᴏᴍᴘᴛ ɪs ᴛᴏᴏ ʟᴏɴɢ (ᴍᴀx 𝟺𝟶𝟶𝟶 ᴄʜᴀʀᴀᴄᴛᴇʀs). Pʟᴇᴀsᴇ sʜᴏʀᴛᴇɴ ɪᴛ.")
 
     audio_file = "marin.mp3"
     typing_task = asyncio.create_task(send_typing_action(client, message.chat.id))
@@ -72,7 +72,7 @@ async def process_query(client: Client, message: Message, tts: bool = False):
         content = await safe_gpt_response(query, timeout=30)
 
         if not content:
-            return await message.reply_text("⚠️ No response from GPT.")
+            return await message.reply_text("⚠️ Nᴏ ʀᴇsᴘᴏɴsᴇ ғʀᴏᴍ GPT.")
 
         if tts:
             if len(content) > 1000:
@@ -120,7 +120,7 @@ async def jarvis_handler(client: Client, message: Message):
     try:
         await asyncio.wait_for(process_query(client, message), timeout=60)
     except asyncio.TimeoutError:
-        await message.reply_text("⏳ Timeout. Please try again with a shorter prompt.")
+        await message.reply_text("⏳ Tɪᴍᴇᴏᴜᴛ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ ᴡɪᴛʜ ᴀ sʜᴏʀᴛᴇʀ ᴘʀᴏᴍᴘᴛ.")
 
 
 @app.on_message(filters.command(["chatgpt", "ai", "ask", "Master"], prefixes=["+", ".", "/", "-", "?", "$", "#", "&"]))
@@ -128,7 +128,7 @@ async def chatgpt_handler(client: Client, message: Message):
     try:
         await asyncio.wait_for(process_query(client, message), timeout=60)
     except asyncio.TimeoutError:
-        await message.reply_text("⏳ Timeout. Please try again with a shorter prompt.")
+        await message.reply_text("⏳ Tɪᴍᴇᴏᴜᴛ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ ᴡɪᴛʜ ᴀ sʜᴏʀᴛᴇʀ ᴘʀᴏᴍᴘᴛ")
 
 
 @app.on_message(filters.command(["ssis"], prefixes=["a", "A"]))
@@ -136,4 +136,4 @@ async def annie_tts_handler(client: Client, message: Message):
     try:
         await asyncio.wait_for(process_query(client, message, tts=True), timeout=60)
     except asyncio.TimeoutError:
-        await message.reply_text("⏳ Timeout. Please try again with a shorter prompt.")
+        await message.reply_text("⏳ Tɪᴍᴇᴏᴜᴛ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ ᴡɪᴛʜ ᴀ sʜᴏʀᴛᴇʀ ᴘʀᴏᴍᴘᴛ")
