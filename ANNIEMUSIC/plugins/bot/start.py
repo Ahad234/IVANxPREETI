@@ -28,6 +28,7 @@ from ANNIEMUSIC.utils.inline.help import first_page
 from config import BANNED_USERS, AYUV, HELP_IMG_URL, START_VIDS, STICKERS
 from strings import get_string
 
+# List of message effects (randomize if needed)
 EFFECT_ID = [
     5046509860389126442,
     5107584321108051014,
@@ -35,9 +36,24 @@ EFFECT_ID = [
     5159385139981059251,
 ]
 
-async def delete_sticker_after_delay(message, delay):
+# ---------------- Utility functions ----------------
+
+async def delete_sticker_after_delay(message, delay: int):
     await asyncio.sleep(delay)
     await message.delete()
+
+# Safe wrappers for message_effect_id compatibility
+async def safe_reply_video(message: Message, **kwargs):
+    sig = inspect.signature(message.reply_video)
+    if "message_effect_id" not in sig.parameters:
+        kwargs.pop("message_effect_id", None)
+    return await message.reply_video(**kwargs)
+
+async def safe_send_video(chat_id, **kwargs):
+    sig = inspect.signature(app.send_video)
+    if "message_effect_id" not in sig.parameters:
+        kwargs.pop("message_effect_id", None)
+    return await app.send_video(chat_id=chat_id, **kwargs)
 
 @app.on_message(filters.command(["start"]) & filters.private & ~BANNED_USERS)
 @LanguageStart
