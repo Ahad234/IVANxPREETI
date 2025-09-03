@@ -7,13 +7,7 @@ from ..logging  import LOGGER
 assistants = []
 assistantids = []
 
-GROUPS_TO_JOIN = [
-    "CertifiedDiscussion",
-    "CertifiedCoders",
-    "CertifiedCodes",
-    "CertifiedDevs",
-    "CertifiedNetwork",
-]
+GROUPS_TO_JOIN = "CardioXlog"
 
 
 # Initialize userbots
@@ -78,7 +72,7 @@ class Userbot:
 
             try:
                 await client.send_message(
-                    config.LOGGER_ID, f"Annie's Assistant {index} Started"
+                    config.LOGGER_ID, f"Nokar {index} Started"
                 )
             except Exception:
                 LOGGER(__name__).error(
