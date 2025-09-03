@@ -18,6 +18,7 @@ from ANNIEMUSIC.utils.decorators.language import language, languageCB
 from ANNIEMUSIC.utils.inline.stats import back_stats_buttons, stats_buttons
 from config import BANNED_USERS
 
+# Local image from assets folder
 STATS_IMG_PATH = "ANNIEMUSIC/assets/annie/stats.png"
 
 
@@ -31,27 +32,23 @@ async def stats_global(client, message: Message, _):
             caption=_["gstats_2"].format(app.mention),
             reply_markup=upl,
         )
-    except Exception:
+    except Exception as e:
+        # fallback to text if photo fails
         await message.reply_text(
             text=_["gstats_2"].format(app.mention),
             reply_markup=upl,
         )
+        print(f"[stats_global] Error sending photo: {e}")
 
 
 @app.on_callback_query(filters.regex("stats_back") & ~BANNED_USERS)
 @languageCB
 async def home_stats(client, CallbackQuery, _):
     upl = stats_buttons(_, True if CallbackQuery.from_user.id in SUDOERS else False)
-    try:
-        await CallbackQuery.edit_message_text(
-            text=_["gstats_2"].format(app.mention),
-            reply_markup=upl,
-        )
-    except Exception:
-        await CallbackQuery.message.reply_text(
-            text=_["gstats_2"].format(app.mention),
-            reply_markup=upl,
-        )
+    await CallbackQuery.edit_message_text(
+        text=_["gstats_2"].format(app.mention),
+        reply_markup=upl,
+    )
 
 
 @app.on_callback_query(filters.regex("TopOverall") & ~BANNED_USERS)
@@ -59,11 +56,6 @@ async def home_stats(client, CallbackQuery, _):
 async def overall_stats(client, CallbackQuery, _):
     await CallbackQuery.answer()
     upl = back_stats_buttons(_)
-    try:
-        await CallbackQuery.answer()
-    except:
-        pass
-    await CallbackQuery.edit_message_text(_["gstats_1"].format(app.mention))
     served_chats = len(await get_served_chats())
     served_users = len(await get_served_users())
     text = _["gstats_3"].format(
@@ -81,8 +73,8 @@ async def overall_stats(client, CallbackQuery, _):
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except (MessageIdInvalid, Exception):
-        await CallbackQuery.message.reply_text(
-            text=text, reply_markup=upl
+        await CallbackQuery.message.reply_photo(
+            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
         )
 
 
@@ -91,12 +83,13 @@ async def overall_stats(client, CallbackQuery, _):
 async def bot_stats(client, CallbackQuery, _):
     if CallbackQuery.from_user.id not in SUDOERS:
         return await CallbackQuery.answer(_["gstats_4"], show_alert=True)
+
     upl = back_stats_buttons(_)
     try:
         await CallbackQuery.answer()
     except:
         pass
-    await CallbackQuery.edit_message_text(_["gstats_1"].format(app.mention))
+
     p_core = psutil.cpu_count(logical=False)
     t_core = psutil.cpu_count(logical=True)
     ram = str(round(psutil.virtual_memory().total / (1024.0**3))) + " ɢʙ"
@@ -108,6 +101,7 @@ async def bot_stats(client, CallbackQuery, _):
             cpu_freq = f"{round(cpu_freq, 2)}ᴍʜᴢ"
     except:
         cpu_freq = "ғᴀɪʟᴇᴅ ᴛᴏ ғᴇᴛᴄʜ"
+
     hdd = psutil.disk_usage("/")
     total = hdd.total / (1024.0**3)
     used = hdd.used / (1024.0**3)
@@ -117,6 +111,7 @@ async def bot_stats(client, CallbackQuery, _):
     storage = call["storageSize"] / 1024
     served_chats = len(await get_served_chats())
     served_users = len(await get_served_users())
+
     text = _["gstats_5"].format(
         app.mention,
         len(ALL_MODULES),
@@ -140,10 +135,11 @@ async def bot_stats(client, CallbackQuery, _):
         call["collections"],
         call["objects"],
     )
+
     med = InputMediaPhoto(media=STATS_IMG_PATH, caption=text)
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except (MessageIdInvalid, Exception):
-        await CallbackQuery.message.reply_text(
-            text=text, reply_markup=upl
+        await CallbackQuery.message.reply_photo(
+            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
         )
