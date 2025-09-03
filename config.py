@@ -71,8 +71,7 @@ STRING5 = getenv("STRING_SESSION5")
 SERVER_PLAYLIST_LIMIT = int(getenv("SERVER_PLAYLIST_LIMIT", "3000"))
 PLAYLIST_FETCH_LIMIT = int(getenv("PLAYLIST_FETCH_LIMIT", "2500"))
 
-# ───── Bot,
-Media Assets ───── #
+# ───── Bot Media Assets ───── #
 
 START_VIDS = [
     "ANNIEMUSIC/assets/annie/uff.mp4",
