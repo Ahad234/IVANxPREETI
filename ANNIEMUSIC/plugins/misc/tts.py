@@ -30,7 +30,7 @@ def _cleanup(path: str) -> None:
 
 
 async def _synthesize(text: str, out_path: str) -> None:
-    """Generate an audio file using ElevenLabs TTS."""
+    """Gᴇɴᴇʀᴀᴛᴇ ᴀɴ ᴀᴜᴅɪᴏ ғɪʟᴇ ᴜsɪɴɢ Mᴀʀɪɴ Tᴛs."""
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
     headers = {
         "xi-api-key": ELEVENLABS_API_KEY,
@@ -41,7 +41,7 @@ async def _synthesize(text: str, out_path: str) -> None:
 
     resp = requests.post(url, headers=headers, json=payload)
     if resp.status_code != 200:
-        raise Exception(f"ElevenLabs TTS failed: {resp.text}")
+        raise Exception(f"MARIN TTS failed: {resp.text}")
 
     with open(out_path, "wb") as f:
         f.write(resp.content)
@@ -51,7 +51,7 @@ async def _synthesize(text: str, out_path: str) -> None:
 # ---------------------------------------------------------------------------
 @app.on_message(filters.command("tts"))
 async def cmd_tts(client: Client, message: Message):
-    """Direct `/tts <text>` command using ElevenLabs voice."""
+    """Direct `/tts <text>` ᴄᴏᴍᴍᴀɴᴅ ᴜsɪɴɢ Mᴀʀɪɴ ᴠᴏɪᴄᴇ."""
     if len(message.command) < 2:
         return await message.reply_text(
             "❌ Usage:\n`/tts <text>`\nExample: `/tts Hello world!`",
@@ -59,7 +59,7 @@ async def cmd_tts(client: Client, message: Message):
         )
 
     text = message.text.split(" ", 1)[1]
-    tmp = os.path.join(TMP_DIR, f"tts_{message.from_user.id}.mp3")
+    tmp = os.path.join(TMP_DIR, f"marin.mp3")
 
     try:
         await client.send_chat_action(message.chat.id, ChatAction.RECORD_AUDIO)
@@ -69,7 +69,7 @@ async def cmd_tts(client: Client, message: Message):
         await client.send_audio(
             chat_id=message.chat.id,
             audio=tmp,
-            caption=f"🗣️ Generated with ElevenLabs voice",
+            caption=f"🗣️ Gᴇɴᴇʀᴀᴛᴇᴅ ᴡɪᴛʜ Mᴀʀɪɴ ᴠᴏɪᴄᴇ",
             reply_to_message_id=message.id,
             parse_mode=ParseMode.MARKDOWN,
         )
