@@ -1,6 +1,6 @@
 import asyncio
 import os
-from gtts import gTTS
+import requests
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
@@ -8,6 +8,13 @@ from pyrogram.enums import ChatAction
 
 from lexica import AsyncClient, languageModels, Messages
 from ANNIEMUSIC import app
+
+
+# ----------------------------
+# ElevenLabs Config
+# ----------------------------
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "E7bpJOpaUwdzBn3Wd6Lr")
 
 
 def extract_content(response) -> str:
@@ -44,6 +51,9 @@ async def send_typing_action(client: Client, chat_id: int, interval: int = 3):
         pass
 
 
+# ----------------------------
+# Process GPT + TTS
+# ----------------------------
 async def process_query(client: Client, message: Message, tts: bool = False):
     if len(message.command) < 2:
         return await message.reply_text(
@@ -55,7 +65,7 @@ async def process_query(client: Client, message: Message, tts: bool = False):
     if len(query) > 4000:
         return await message.reply_text("❌ Your prompt is too long (max 4000 characters). Please shorten it.")
 
-    audio_file = "response.mp3"
+    audio_file = "marin.mp3"
     typing_task = asyncio.create_task(send_typing_action(client, message.chat.id))
 
     try:
@@ -67,9 +77,25 @@ async def process_query(client: Client, message: Message, tts: bool = False):
         if tts:
             if len(content) > 1000:
                 content = content[:1000] + "..."
-            tts_engine = gTTS(text=content, lang="en")
-            tts_engine.save(audio_file)
+
+            # --- ElevenLabs TTS here ---
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
+            headers = {
+                "xi-api-key": ELEVENLABS_API_KEY,
+                "accept": "audio/mpeg",
+                "Content-Type": "application/json"
+            }
+            payload = {"text": content}
+
+            resp = requests.post(url, headers=headers, json=payload)
+            if resp.status_code != 200:
+                return await message.reply_text(f"⚠️ ElevenLabs TTS failed: {resp.text}")
+
+            with open(audio_file, "wb") as f:
+                f.write(resp.content)
+
             await client.send_voice(chat_id=message.chat.id, voice=audio_file)
+
         else:
             if len(content) > 4096:
                 for i in range(0, len(content), 4096):
@@ -86,6 +112,9 @@ async def process_query(client: Client, message: Message, tts: bool = False):
             os.remove(audio_file)
 
 
+# ----------------------------
+# Commands
+# ----------------------------
 @app.on_message(filters.command(["arvis"], prefixes=["j", "J"]))
 async def jarvis_handler(client: Client, message: Message):
     try:
