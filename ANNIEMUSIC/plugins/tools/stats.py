@@ -18,8 +18,7 @@ from ANNIEMUSIC.utils.decorators.language import language, languageCB
 from ANNIEMUSIC.utils.inline.stats import back_stats_buttons, stats_buttons
 from config import BANNED_USERS
 
-# Local image from assets folder
-STATS_IMG_PATH = "ANNIEMUSIC/assets/annie/stats.png"
+STATS_IMG_URL = "https://files.catbox.moe/zztkas.jpg"
 
 
 @app.on_message(filters.command(["stats", "gstats"]) & ~BANNED_USERS)
@@ -28,7 +27,7 @@ async def stats_global(client, message: Message, _):
     upl = stats_buttons(_, True if message.from_user.id in SUDOERS else False)
     try:
         await message.reply_photo(
-            photo=STATS_IMG_PATH,
+            photo=STATS_IMG_URL,
             caption=_["gstats_2"].format(app.mention),
             reply_markup=upl,
         )
@@ -69,12 +68,12 @@ async def overall_stats(client, CallbackQuery, _):
         config.AUTO_LEAVING_ASSISTANT,
         config.DURATION_LIMIT_MIN,
     )
-    med = InputMediaPhoto(media=STATS_IMG_PATH, caption=text)
+    med = InputMediaPhoto(media=STATS_IMG_URL, caption=text)
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except (MessageIdInvalid, Exception):
         await CallbackQuery.message.reply_photo(
-            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
+            photo=STATS_IMG_URL, caption=text, reply_markup=upl
         )
 
 
@@ -136,10 +135,10 @@ async def bot_stats(client, CallbackQuery, _):
         call["objects"],
     )
 
-    med = InputMediaPhoto(media=STATS_IMG_PATH, caption=text)
+    med = InputMediaPhoto(media=STATS_IMG_URL, caption=text)
     try:
         await CallbackQuery.edit_message_media(media=med, reply_markup=upl)
     except (MessageIdInvalid, Exception):
         await CallbackQuery.message.reply_photo(
-            photo=STATS_IMG_PATH, caption=text, reply_markup=upl
+            photo=STATS_IMG_URL, caption=text, reply_markup=upl
         )
