@@ -71,13 +71,16 @@ STRING5 = getenv("STRING_SESSION5")
 SERVER_PLAYLIST_LIMIT = int(getenv("SERVER_PLAYLIST_LIMIT", "3000"))
 PLAYLIST_FETCH_LIMIT = int(getenv("PLAYLIST_FETCH_LIMIT", "2500"))
 
-# ───── Bot Media Assets ───── #
+# ───── Bot,
+"Media Assets ───── #
 
 START_VIDS = [
-    "ANNIEMUSIC/assets/annie/uu.mp4",
     "ANNIEMUSIC/assets/annie/uff.mp4",
+    "ANNIEMUSIC/assets/annie/yeah.mp4",
     "ANNIEMUSIC/assets/annie/oh.mp4",
-    "ANNIEMUSIC/assets/annie/huu.mp4"
+    "ANNIEMUSIC/assets/annie/nah.mp4"
+    "ANNIEMUSIC/assets/annie/hein.mp4"
+    "ANNIEMUSIC/assets/annie/hein.mp4"
 ]
 
 STICKERS = [
@@ -88,30 +91,27 @@ STICKERS = [
     "CAACAgUAAxkBAAJ9cWi3sIpJXocM64UNYVq9J5WkNYeTAAKpEgACT_2JVy9ts-zlPvBfHgQ"
 ]
 HELP_IMG_URL = [
-    "ANNIEMUSIC/assets/annie/Uwu.jpeg",
-    "ANNIEMUSIC/assets/annie/aa.jpeg",
-    "ANNIEMUSIC/assets/annie/beautiful.jpeg",
-    "ANNIEMUSIC/assets/annie/dd.jpeg",
-    "ANNIEMUSIC/assets/annie/download5.jpeg",
-    "ANNIEMUSIC/assets/annie/ee.jpeg",
-    "ANNIEMUSIC/assets/annie/gg.jpeg",
-    "ANNIEMUSIC/assets/annie/hh.jpeg",
-    "ANNIEMUSIC/assets/annie/nn.jpeg",
-    "ANNIEMUSIC/assets/annie/ping.png",
-    "ANNIEMUSIC/assets/annie/st10.png",
-    "ANNIEMUSIC/assets/annie/st14.png",
-    "ANNIEMUSIC/assets/annie/st17.png",
-    "ANNIEMUSIC/assets/annie/st6.png"
+    "ANNIEMUSIC/assets/annie/aaa.jpeg",
+    "ANNIEMUSIC/assets/annie/bo.jpeg",
+    "ANNIEMUSIC/assets/annie/hurr.jpeg",
+    "ANNIEMUSIC/assets/annie/hehe.jpeg",
+    "ANNIEMUSIC/assets/annie/ipl.jpeg",
+    "ANNIEMUSIC/assets/annie/ji.jpeg",
+    "ANNIEMUSIC/assets/annie/kit.jpeg",
+    "ANNIEMUSIC/assets/annie/li.jpeg",
+    "ANNIEMUSIC/assets/annie/marin.jpeg",
+    "ANNIEMUSIC/assets/annie/soo.jpeg"
+    
 ]
 
-PING_VID_URL = "ANNIEMUSIC/assets/annie/ping.png"
-PLAYLIST_IMG_URL = "ANNIEMUSIC/assets/annie/st8.png"
-STATS_VID_URL = "ANNIEMUSIC/assets/annie/stats.png"
-TELEGRAM_AUDIO_URL = "ANNIEMUSIC/assets/annie/st3.png"
-TELEGRAM_VIDEO_URL = "ANNIEMUSIC/assets/annie/st1.png"
-STREAM_IMG_URL = "ANNIEMUSIC/assets/annie/st5.png"
-SOUNCLOUD_IMG_URL = "ANNIEMUSIC/assets/annie/st11.png"
-YOUTUBE_IMG_URL = "ANNIEMUSIC/assets/annie/st4.png"
+PING_VID_URL = "ANNIEMUSIC/assets/annie/oh.mp4"
+PLAYLIST_IMG_URL = "ANNIEMUSIC/assets/annie/kit.jpeg"
+STATS_VID_URL = "ANNIEMUSIC/assets/annie/li.jpeg"
+TELEGRAM_AUDIO_URL = "ANNIEMUSIC/assets/annie/marin.jpeg"
+TELEGRAM_VIDEO_URL = "ANNIEMUSIC/assets/annie/soo.jpeg"
+STREAM_IMG_URL = "ANNIEMUSIC/assets/annie/hehe.jpeg"
+SOUNCLOUD_IMG_URL = "ANNIEMUSIC/assets/annie/aaa.jpeg"
+YOUTUBE_IMG_URL = "ANNIEMUSIC/assets/annie/ipl.jpeg"
 SPOTIFY_ARTIST_IMG_URL = SPOTIFY_ALBUM_IMG_URL = SPOTIFY_PLAYLIST_IMG_URL = YOUTUBE_IMG_URL
 
 # ───── Utility & Functional ───── #
