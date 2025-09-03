@@ -37,7 +37,7 @@ async def safe_gpt_response(prompt: str, timeout: int = 30) -> str:
     try:
         return await asyncio.wait_for(get_gpt_response(prompt), timeout=timeout)
     except asyncio.TimeoutError:
-        raise Exception(" GPT ʀᴇǫᴜᴇsᴛ ᴛɪᴍᴇᴅ ᴏᴜᴛ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀ sʜᴏʀᴛᴇʀ ᴘʀᴏᴍᴘᴛ.")
+        raise Exception(" GPT ʀᴇǫᴜᴇsᴛ ᴛɪᴍᴇᴅ ᴏᴜᴛ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀ sʜᴏʀᴛᴇʀ ᴘʀᴏᴍᴘᴛ.")
     except Exception as e:
         raise Exception(f"❌ GPT Error: {e}")
 
@@ -78,18 +78,26 @@ async def process_query(client: Client, message: Message, tts: bool = False):
             if len(content) > 1000:
                 content = content[:1000] + "..."
 
-            # --- ElevenLabs TTS here ---
+            # --- ElevenLabs TTS with voice settings ---
             url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
             headers = {
                 "xi-api-key": ELEVENLABS_API_KEY,
                 "accept": "audio/mpeg",
                 "Content-Type": "application/json"
             }
-            payload = {"text": content}
+            payload = {
+                "text": content,
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.8,
+                    "style": 0.3,       # adds natural flow
+                    "speaking_rate": 0.9  # slower speech
+                }
+            }
 
             resp = requests.post(url, headers=headers, json=payload)
             if resp.status_code != 200:
-                return await message.reply_text(f"⚠️ TTS failed: {resp.text}")
+                return await message.reply_text(f"⚠️ TTS failed ({resp.status_code}): {resp.text}")
 
             with open(audio_file, "wb") as f:
                 f.write(resp.content)
