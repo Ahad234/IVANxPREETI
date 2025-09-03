@@ -161,7 +161,7 @@ async def welcome(client, message: Message):
                 await add_served_chat(message.chat.id)
                 await message.stop_propagation()
         except Exception as ex:
-            print(ex)]
+            print(ex)
 
 async def delete_sticker_after_delay(message, delay):
     await asyncio.sleep(delay)
