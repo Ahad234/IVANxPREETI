@@ -36,11 +36,29 @@ async def helper_private(client: Client, update: Union[Message, types.CallbackQu
         await update.message.edit_caption(caption, reply_markup=keyboard)
     else:
         await update.delete()
-        await update.reply_photo(
-            photo=HELP_IMG_URL,
-            caption=caption,
-            reply_markup=keyboard
-        )
+
+        # ---- FIXED BLOCK ----
+        try:
+            # Try opening HELP_IMG_URL as a local file
+            with open(HELP_IMG_URL, "rb") as f:
+                await update.reply_photo(
+                    photo=f,
+                    caption=caption,
+                    reply_markup=keyboard
+                )
+        except FileNotFoundError:
+            # If local file not found, treat it as a URL
+            await update.reply_photo(
+                photo=HELP_IMG_URL,
+                caption=caption,
+                reply_markup=keyboard
+            )
+        except Exception as e:
+            # fallback: send text only if photo fails
+            await update.reply_text(
+                caption,
+                reply_markup=keyboard
+            )
 
 # ────────────────────────────────────────────────  group /help notice ─
 
