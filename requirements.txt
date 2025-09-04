@@ -3,7 +3,7 @@ aiohttp
 apscheduler
 asyncio
 bing_image_downloader
-bs4
+beautifulsoup4
 deepai
 edge-tts
 ffmpeg-python
@@ -22,10 +22,8 @@ motor
 nekosbest
 numpy
 opencv-python
-pillow==11.3.0
+pillow
 psutil
-ntgcalls==2.0.6
-py-tgcalls==2.2.7
 pycryptodome
 pydub
 pyfiglet
@@ -40,8 +38,7 @@ SpeechRecognition
 spotipy
 telegraph
 tgcrypto
-youtube-search-python
 unidecode
 wget
-yt-dlp==2025.8.27
+yt-dlp
 git+https://github.com/CertifiedCoders/youtube-search-python
