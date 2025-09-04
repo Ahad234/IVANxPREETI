@@ -73,7 +73,7 @@ PLAYLIST_FETCH_LIMIT = int(getenv("PLAYLIST_FETCH_LIMIT", "2500"))
 
 # ───── Bot Media Assets ───── #
 
-START_VIDS = [
+START_PHOTOS = [
     "ANNIEMUSIC/assets/annie/uff.mp4",
     "ANNIEMUSIC/assets/annie/yeah.mp4",
     "ANNIEMUSIC/assets/annie/oh.mp4",
