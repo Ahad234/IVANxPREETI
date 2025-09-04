@@ -2,7 +2,7 @@ import asyncio
 import importlib
 
 from pyrogram import idle
-from pytgcalls.exceptions import NoActiveGroupCall
+from pytgcalls.exceptions import PytgcallsError
 
 import config
 from ANNIEMUSIC import LOGGER, app, userbot
