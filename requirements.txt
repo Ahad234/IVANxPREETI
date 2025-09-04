@@ -8,7 +8,7 @@ deepai
 edge-tts
 ffmpeg-python
 pyrogram==2.0.106
-pytgcalls==3.0.0.dev24
+git+https://github.com/MarshalX/ntgcalls.git
 future
 gitpython
 google-api-python-client
