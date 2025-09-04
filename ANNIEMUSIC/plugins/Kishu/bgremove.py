@@ -30,7 +30,7 @@ async def remove_background(image_path: str) -> tuple:
                 if "image" not in response.headers.get("content-type", ""):
                     return False, await response.json()
 
-                output_filename = generate_unique_filename("no_bg.png")
+                output_filename = generate_unique_filename("marin.png")
                 async with aiofiles.open(output_filename, "wb") as out_file:
                     await out_file.write(await response.read())
                 return True, output_filename
@@ -40,11 +40,11 @@ async def remove_background(image_path: str) -> tuple:
 
 @app.on_message(filters.command("rmbg"))
 async def remove_bg_command(client, message):
-    status = await message.reply("🖌️ Processing your image...")
+    status = await message.reply("🖌️ Pʀᴏᴄᴇssɪɴɢ ʏᴏᴜʀ ɪᴍᴀɢᴇ...")
     replied = message.reply_to_message
 
     if not replied or not replied.photo:
-        return await status.edit("Please reply to a photo to remove its background.")
+        return await status.edit("Pʟᴇᴀsᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴘʜᴏᴛᴏ ᴛᴏ ʀᴇᴍᴏᴠᴇ ɪᴛs ʙᴀᴄᴋɢʀᴏᴜɴᴅ.")
 
     try:
         downloaded_photo = await client.download_media(replied)
@@ -55,10 +55,10 @@ async def remove_bg_command(client, message):
             error = result["errors"][0]
             return await status.edit(f"⚠️ ERROR: {result['title']}\n{error.get('detail', '')}")
 
-        await message.reply_photo(photo=result, caption="✅ Here's your image without background.")
+        await message.reply_photo(photo=result, caption="✅ Hᴇʀᴇ's ʏᴏᴜʀ ɪᴍᴀɢᴇ ᴡɪᴛʜᴏᴜᴛ ʙᴀᴄᴋɢʀᴏᴜɴᴅ.")
         await message.reply_document(document=result)
         os.remove(result)
         await status.delete()
 
     except Exception as e:
-        await status.edit(f"❌ Failed to process the image.\nError: {e}")
+        await status.edit(f"❌ Fᴀɪʟᴇᴅ ᴛᴏ ᴘʀᴏᴄᴇss ᴛʜᴇ ɪᴍᴀɢᴇ.\nError: {e}")
