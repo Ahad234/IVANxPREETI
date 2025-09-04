@@ -25,7 +25,7 @@ from ANNIEMUSIC.utils.decorators.language import LanguageStart
 from ANNIEMUSIC.utils.formatters import get_readable_time
 from ANNIEMUSIC.utils.inline.start import private_panel, start_panel
 from ANNIEMUSIC.utils.inline.help import first_page
-from config import BANNED_USERS, AYUV, HELP_IMG_URL, START_VIDS, STICKERS
+from config import BANNED_USERS, AYUV, HELP_IMG_URL, START_PHOTOS, STICKERS
 from strings import get_string
 
 
@@ -47,6 +47,7 @@ async def start_pm(client, message: Message, _):
                 photo=HELP_IMG_URL,
                 caption=_["help_1"].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
+                has_spoiler=True,
             )
         elif name[0:3] == "sud":
             await sudoers_list(client=client, message=message, _=_)
@@ -81,12 +82,12 @@ async def start_pm(client, message: Message, _):
                 ]
             )
             await m.delete()
-            # ✅ FIX: use reply_photo instead of send_video (thumbnail is an image, not a video)
             await app.send_photo(
                 chat_id=message.chat.id,
                 photo=thumbnail,
                 caption=searched_text,
                 reply_markup=key,
+                has_spoiler=True,
             )
             if await is_on_off(2):
                 await app.send_message(
@@ -100,12 +101,13 @@ async def start_pm(client, message: Message, _):
         served_chats = len(await get_served_chats())
         served_users = len(await get_served_users())
         UP, CPU, RAM, DISK = await bot_sys_stats()
-        await message.reply_video(
-            random.choice(START_VIDS),
+        await message.reply_photo(
+            random.choice(START_PHOTOS),
             caption=random.choice(AYUV).format(
                 message.from_user.mention, app.mention, UP, DISK, CPU, RAM, served_users, served_chats
             ),
             reply_markup=InlineKeyboardMarkup(out),
+            has_spoiler=True,
         )
         if await is_on_off(2):
             await app.send_message(
@@ -119,10 +121,11 @@ async def start_pm(client, message: Message, _):
 async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
-    await message.reply_video(
-        random.choice(START_VIDS),
+    await message.reply_photo(
+        random.choice(START_PHOTOS),
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
+        has_spoiler=True,
     )
     return await add_served_chat(message.chat.id)
 
@@ -154,8 +157,8 @@ async def welcome(client, message: Message):
                     return await app.leave_chat(message.chat.id)
 
                 out = start_panel(_)
-                await message.reply_video(
-                    random.choice(START_VIDS),
+                await message.reply_photo(
+                    random.choice(START_PHOTOS),
                     caption=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
@@ -163,6 +166,7 @@ async def welcome(client, message: Message):
                         app.mention,
                     ),
                     reply_markup=InlineKeyboardMarkup(out),
+                    has_spoiler=True,
                 )
                 await add_served_chat(message.chat.id)
                 await message.stop_propagation()
