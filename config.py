@@ -74,20 +74,13 @@ PLAYLIST_FETCH_LIMIT = int(getenv("PLAYLIST_FETCH_LIMIT", "2500"))
 # ───── Bot Media Assets ───── #
 
 START_PHOTOS = [
-    "ANNIEMUSIC/assets/annie/uff.mp4",
-    "ANNIEMUSIC/assets/annie/yeah.mp4",
-    "ANNIEMUSIC/assets/annie/oh.mp4",
-    "ANNIEMUSIC/assets/annie/nah.mp4"
-    "ANNIEMUSIC/assets/annie/hein.mp4"
-    "ANNIEMUSIC/assets/annie/hein.mp4"
+    "ANNIEMUSIC/assets/annie/uff.mp4"
 ]
 
 STICKERS = [
-    "CAACAgUAAxkBAAJ9b2i3sIW0gLK-9ibLUB40kt20geGxAAKXFgACAiuIV3_FTwqaZghPHgQ",
-    "CAACAgUAAxkBAAJ9cGi3sId1J4t8J5QMnlCfOC4WJjg2AAJ_EwAC1bGJV_V1r5ipRn-MHgQ",
-    "CAACAgUAAxkBAAJ9cWi3sIpJXocM64UNYVq9J5WkNYeTAAKpEgACT_2JVy9ts-zlPvBfHgQ",
-    "CAACAgUAAxkBAAJ9c2i3sJVnR-yJpDI6CxrBKha0E7aoAAKrEgACHHqJV84cBIZIiBVTHgQ",
-    "CAACAgUAAxkBAAJ9cWi3sIpJXocM64UNYVq9J5WkNYeTAAKpEgACT_2JVy9ts-zlPvBfHgQ"
+    "CAACAgUAAxkBAAEPTt9oufwjhYeBaRrkGKa64KjqdpOkbgACcRgAAmY3YVXwdNH-3INmEDYE",
+    "CAACAgUAAxkBAAEPTuFoufwloJgjOdEhsL0G4xGyhnrbKAAC-hUAAlimaVVRIEFcr6KXODYE",
+       "CAACAgUAAxkBAAEPTt1oufwYNPajFHslWKT6a0WdOWlPuwACNxgAAlnaYFXtKE5Nj9mdqzYE"
 ]
 HELP_IMG_URL = [
     "ANNIEMUSIC/assets/annie/aaa.jpeg",
