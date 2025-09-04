@@ -24,9 +24,9 @@ async def join_userbot(app, chat_id, chat_username=None):
         if member.status == ChatMemberStatus.BANNED:
             await app.unban_chat_member(chat_id, userbot.id)
         elif member.status != ChatMemberStatus.LEFT:
-            return "**🤖 Assistant is already in the chat.**"
+            return "**🔥 Assɪsᴛᴀɴᴛ ɪs ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ.**"
     except PeerIdInvalid:
-        return "**❌ Invalid chat ID.**"
+        return "**❌ Iɴᴠᴀʟɪᴅ ᴄʜᴀᴛ ID.**"
     except Exception:
         pass
 
@@ -36,9 +36,9 @@ async def join_userbot(app, chat_id, chat_username=None):
         else:
             invite_link = await app.create_chat_invite_link(chat_id)
             await userbot.join_chat(invite_link.invite_link)
-        return "**✅ Assistant joined successfully.**"
+        return "**❄️ Assɪsᴛᴀɴᴛ ᴊᴏɪɴᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ.**"
     except UserAlreadyParticipant:
-        return "**🤖 Assistant is already a participant.**"
+        return "**⚡ Assɪsᴛᴀɴᴛ ɪs ᴀʟʀᴇᴀᴅʏ ᴀ ᴘᴀʀᴛɪᴄɪᴘᴀɴᴛ.**"
     except Exception:
         try:
             if chat_username:
@@ -46,11 +46,11 @@ async def join_userbot(app, chat_id, chat_username=None):
             else:
                 invite_link = await app.create_chat_invite_link(chat_id)
                 await userbot.join_chat(invite_link.invite_link)
-            return "**✅ Assistant sent a join request.**"
+            return "**Assɪsᴛᴀɴᴛ sᴇɴᴛ ᴀ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛ.🥀**"
         except AttributeError:
-            return "**❌ Your assistant version doesn't support join requests.**"
+            return "**😓 Yᴏᴜʀ ᴀssɪsᴛᴀɴᴛ ᴠᴇʀsɪᴏɴ ᴅᴏᴇsɴ'ᴛ sᴜᴘᴘᴏʀᴛ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛs.**"
         except Exception as e:
-            return f"**❌ Failed to add assistant: {str(e)}**"
+            return f"**❌ Fᴀɪʟᴇᴅ ᴛᴏ ᴀᴅᴅ ᴀssɪsᴛᴀɴᴛ: {str(e)}**"
 
 
 @app.on_chat_join_request()
@@ -60,7 +60,7 @@ async def approve_join_request(client, chat_join_request: ChatJoinRequest):
         await client.approve_chat_join_request(chat_join_request.chat.id, userbot.id)
         await client.send_message(
             chat_join_request.chat.id,
-            "**✅ Assistant has been approved and joined the chat.**",
+            "**⚡Assɪsᴛᴀɴᴛ ʜᴀs ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ ᴀɴᴅ ᴊᴏɪɴᴇᴅ ᴛʜᴇ ᴄʜᴀᴛ.**",
         )
 
 
@@ -72,7 +72,7 @@ async def approve_join_request(client, chat_join_request: ChatJoinRequest):
 )
 async def join_group(app, message):
     chat_id = message.chat.id
-    status_message = await message.reply("**⏳ Please wait, inviting assistant...**")
+    status_message = await message.reply("**⏳ Pʟᴇᴀsᴇ ᴡᴀɪᴛ, ɪɴᴠɪᴛɪɴɢ ᴀssɪsᴛᴀɴᴛ...**")
 
     try:
         me = await app.get_me()
@@ -101,23 +101,23 @@ async def leave_one(app, message):
         userbot = await get_assistant(chat_id)
         member = await userbot.get_chat_member(chat_id, userbot.id)
         if member.status in [ChatMemberStatus.LEFT, ChatMemberStatus.BANNED]:
-            return await message.reply("**🤖 Assistant is not currently in this chat.**")
+            return await message.reply("**Assɪsᴛᴀɴᴛ ɪs ɴᴏᴛ ɪɴ ᴛʜɪs ᴄʜᴀᴛ. 😢.**")
 
         await userbot.leave_chat(chat_id)
-        await app.send_message(chat_id, "**✅ Assistant has left this chat.**")
+        await app.send_message(chat_id, "**Assɪsᴛᴀɴᴛ ʜᴀs ʟᴇғᴛ ᴛʜɪs ᴄʜᴀᴛ. 🥀**")
     except ChannelPrivate:
         await message.reply("**❌ Error: This chat is not accessible or has been deleted.**")
     except UserNotParticipant:
-        await message.reply("**🤖 Assistant is not in this chat.**")
+        await message.reply("**Assɪsᴛᴀɴᴛ ɪs ɴᴏᴛ ɪɴ ᴛʜɪs ᴄʜᴀᴛ. 😢.**")
     except Exception as e:
-        await message.reply(f"**❌ Failed to remove assistant:** `{str(e)}`")
+        await message.reply(f"**❌ Fᴀɪʟᴇᴅ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴀssɪsᴛᴀɴᴛ:** `{str(e)}`")
 
 
 @app.on_message(filters.command("leaveall", prefixes=["."]) & dev_filter)
 async def leave_all(app, message):
     left = 0
     failed = 0
-    status_message = await message.reply("🔄 **Assistant is leaving all chats...**")
+    status_message = await message.reply("❄️**Assɪsᴛᴀɴᴛ ɪs ʟᴇᴀᴠɪɴɢ ᴀʟʟ ᴄʜᴀᴛs...**")
 
     try:
         userbot = await get_assistant(message.chat.id)
