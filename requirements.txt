@@ -7,6 +7,8 @@ bs4
 deepai
 edge-tts
 ffmpeg-python
+pyrogram==2.0.106
+pytgcalls==3.0.0.dev24
 future
 gitpython
 google-api-python-client
@@ -37,7 +39,9 @@ speedtest-cli
 SpeechRecognition
 spotipy
 telegraph
-tgcrypto==1.2.5
+tgcrypto
+youtube-search-python
+yt-dlp
 unidecode
 wget
 yt-dlp==2025.8.27
