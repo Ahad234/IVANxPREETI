@@ -41,7 +41,6 @@ spotipy
 telegraph
 tgcrypto
 youtube-search-python
-yt-dlp
 unidecode
 wget
 yt-dlp==2025.8.27
