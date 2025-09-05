@@ -1,6 +1,3 @@
-# ANNIEMUSIC/core/call.py
-# Clean and stable version for pytgcalls 3.x
-
 import asyncio
 from typing import Optional, List
 
@@ -9,7 +6,7 @@ from pyrogram.errors import FloodWait, ChatAdminRequired
 
 import config
 from ANNIEMUSIC import LOGGER
-from pytgcalls import PyTgCalls
+from pytgcalls import GroupCallFactory
 from pytgcalls.types.input_stream import AudioPiped, VideoPiped
 
 
@@ -17,13 +14,13 @@ class Call:
     """
     Multi-assistant voice client manager.
     - Starts up to 5 userbot clients (from STRING1..STRING5)
-    - Starts matching PyTgCalls instances
+    - Starts matching GroupCallFactory instances
     - Provides helpers to check VC status and stream audio/video
     """
 
     def __init__(self) -> None:
         self.userbots: List[Optional[Client]] = []
-        self.calls: List[Optional[PyTgCalls]] = []
+        self.calls: List[Optional[object]] = []
         self.active_calls: set[int] = set()
 
         strings = [
@@ -43,14 +40,17 @@ class Call:
                     session_string=sess,
                 )
                 self.userbots.append(cli)
-                self.calls.append(PyTgCalls(cli))
+
+                # New way to create group call client
+                call_client = GroupCallFactory(cli).get_group_call()
+                self.calls.append(call_client)
             else:
                 self.userbots.append(None)
                 self.calls.append(None)
 
     async def start(self) -> None:
-        """Start all userbots and their PyTgCalls clients."""
-        LOGGER(__name__).info("Starting assistants with PyTgCalls backend...")
+        """Start all userbots and their call clients."""
+        LOGGER(__name__).info("Starting assistants with GroupCallFactory backend...")
 
         for cli in self.userbots:
             if cli and not cli.is_connected:
@@ -77,7 +77,7 @@ class Call:
                 except Exception:
                     pass
 
-    def _pick_call(self) -> Optional[PyTgCalls]:
+    def _pick_call(self):
         """Pick the first available call engine."""
         for call in self.calls:
             if call is not None:
@@ -103,7 +103,7 @@ class Call:
         """Join a VC and start streaming an audio or video source."""
         call = self._pick_call()
         if not call:
-            LOGGER(__name__).error("No available PyTgCalls client.")
+            LOGGER(__name__).error("No available GroupCall client.")
             return False
 
         try:
