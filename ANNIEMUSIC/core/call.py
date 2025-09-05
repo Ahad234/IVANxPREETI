@@ -48,8 +48,6 @@ class Call:
                 self.userbots.append(None)
                 self.calls.append(None)
 
-    # ---------------- Core lifecycle ----------------
-
     async def start(self) -> None:
         """Start all userbots and their PyTgCalls clients."""
         LOGGER(__name__).info("Starting assistants with PyTgCalls backend...")
@@ -79,8 +77,6 @@ class Call:
                 except Exception:
                     pass
 
-    # ---------------- Internal Helpers ----------------
-
     def _pick_call(self) -> Optional[PyTgCalls]:
         """Pick the first available call engine."""
         for call in self.calls:
@@ -102,8 +98,6 @@ class Call:
         """Check if a VC is active in the chat."""
         info = await self.get_call(chat_id)
         return bool(info)
-
-    # ---------------- Streaming ----------------
 
     async def join(self, chat_id: int, source: str, video: bool = False) -> bool:
         """Join a VC and start streaming an audio or video source."""
@@ -153,8 +147,6 @@ class Call:
             LOGGER(__name__).error(f"Failed to leave VC in {chat_id}: {e}")
             return False
 
-    # ---------------- High-level convenience ----------------
-
     async def stream_call(self, source: str, chat_id: Optional[int] = None, video: bool = False) -> bool:
         """Start or switch stream in the given chat or default log group."""
         if chat_id is None and hasattr(config, "LOGGER_ID"):
@@ -173,5 +165,4 @@ class Call:
         return
 
 
-# Export singleton
 JARVIS = Call()
