@@ -24,9 +24,9 @@ async def init():
     # ✅ Load cookies at startup
     try:
         await fetch_and_store_cookies()
-        LOGGER("ANNIEMUSIC").info("✅ YouTube cookies loaded successfully")
+        LOGGER("preetixmusic").info("✅ YouTube cookies loaded successfully")
     except Exception as e:
-        LOGGER("ANNIEMUSIC").warning(f"⚠️ Cookie loading failed: {e}")
+        LOGGER("preetixmusic").warning(f"⚠️ Cookie loading failed: {e}")
 
     # ✅ Load sudo users
     await sudo()
@@ -40,7 +40,7 @@ async def init():
         for user_id in users:
             BANNED_USERS.add(user_id)
     except Exception as e:
-        LOGGER("ANNIEMUSIC").warning(f"⚠️ Failed to load banned users: {e}")
+        LOGGER("preetixmusic").warning(f"⚠️ Failed to load banned users: {e}")
 
     # ✅ Start Pyrogram clients
     await app.start()
@@ -59,15 +59,15 @@ async def init():
                 "https://te.legra.ph/file/29f784eb49d230ab62e9e.mp4"
             )
         except Exception as e:
-            LOGGER("ANNIEMUSIC").error(f"⚠️ Could not stream startup media: {e}")
+            LOGGER("preetixmusic").error(f"⚠️ Could not stream startup media: {e}")
     else:
-        LOGGER("ANNIEMUSIC").warning(
+        LOGGER("preetixmusic").warning(
             "⚠️ No active voice chat found in your log group/channel. Please start a VC manually."
         )
 
     # ✅ Register decorators
     await JARVIS.decorators()
-    LOGGER("ANNIEMUSIC").info("🎶 Annie Music Robot started successfully!")
+    LOGGER("preetixmusic").info("🎶Ivan Baby started successfully!")
 
     # ✅ Keep bot running
     await idle()
@@ -75,7 +75,7 @@ async def init():
     # ✅ Stop services
     await app.stop()
     await userbot.stop()
-    LOGGER("ANNIEMUSIC").info("🛑 Annie Music Bot stopped.")
+    LOGGER("preetixmusic").info("🛑 Ivan Music Bot stopped.")
 
 
 if __name__ == "__main__":
