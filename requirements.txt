@@ -19,6 +19,7 @@ lexica-api
 motor
 nekosbest
 numpy
+pytgcalls==3.0.0.dev24
 opencv-python-headless
 pillow
 psutil
