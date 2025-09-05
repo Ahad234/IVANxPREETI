@@ -2,7 +2,6 @@ import asyncio
 import importlib
 
 from pyrogram import idle
-from pytgcalls.exceptions import PytgcallsError
 
 import config
 from ANNIEMUSIC import LOGGER, app, userbot
@@ -10,31 +9,29 @@ from ANNIEMUSIC.core.call import JARVIS
 from ANNIEMUSIC.misc import sudo
 from ANNIEMUSIC.plugins import ALL_MODULES
 from ANNIEMUSIC.utils.database import get_banned_users, get_gbanned
-from ANNIEMUSIC.utils.cookie_handler import fetch_and_store_cookies 
+from ANNIEMUSIC.utils.cookie_handler import fetch_and_store_cookies
 from config import BANNED_USERS
 
 
 async def init():
-    if (
-        not config.STRING1
-        and not config.STRING2
-        and not config.STRING3
-        and not config.STRING4
-        and not config.STRING5
-    ):
-        LOGGER(__name__).error("ᴀssɪsᴛᴀɴᴛ sᴇssɪᴏɴ ɴᴏᴛ ғɪʟʟᴇᴅ, ᴘʟᴇᴀsᴇ ғɪʟʟ ᴀ ᴘʏʀᴏɢʀᴀᴍ sᴇssɪᴏɴ...")
+    # ✅ Check Pyrogram session strings
+    if not any([config.STRING1, config.STRING2, config.STRING3, config.STRING4, config.STRING5]):
+        LOGGER(__name__).error(
+            "Assistant session not filled! Please provide at least one Pyrogram session string."
+        )
         exit()
 
-    # ✅ Try to fetch cookies at startup
+    # ✅ Load cookies at startup
     try:
         await fetch_and_store_cookies()
-        LOGGER("ANNIEMUSIC").info("ʏᴏᴜᴛᴜʙᴇ ᴄᴏᴏᴋɪᴇs ʟᴏᴀᴅᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ ✅")
+        LOGGER("ANNIEMUSIC").info("✅ YouTube cookies loaded successfully")
     except Exception as e:
-        LOGGER("ANNIEMUSIC").warning(f"⚠️ᴄᴏᴏᴋɪᴇ ᴇʀʀᴏʀ: {e}")
+        LOGGER("ANNIEMUSIC").warning(f"⚠️ Cookie loading failed: {e}")
 
-
+    # ✅ Load sudo users
     await sudo()
 
+    # ✅ Load banned users
     try:
         users = await get_gbanned()
         for user_id in users:
@@ -42,36 +39,43 @@ async def init():
         users = await get_banned_users()
         for user_id in users:
             BANNED_USERS.add(user_id)
-    except:
-        pass
+    except Exception as e:
+        LOGGER("ANNIEMUSIC").warning(f"⚠️ Failed to load banned users: {e}")
 
+    # ✅ Start Pyrogram clients
     await app.start()
     for all_module in ALL_MODULES:
-        importlib.import_module("ANNIEMUSIC.plugins" + all_module)
+        importlib.import_module("ANNIEMUSIC.plugins." + all_module)
 
-    LOGGER("ANNIEMUSIC.plugins").info("ᴀɴɴɪᴇ's ᴍᴏᴅᴜʟᴇs ʟᴏᴀᴅᴇᴅ...")
-
+    LOGGER("ANNIEMUSIC.plugins").info("✅ All modules loaded successfully")
     await userbot.start()
     await JARVIS.start()
 
-    try:
-        await JARVIS.stream_call("https://te.legra.ph/file/29f784eb49d230ab62e9e.mp4")
-    except NoActiveGroupCall:
-        LOGGER("ANNIEMUSIC").error(
-            "ᴘʟᴇᴀsᴇ ᴛᴜʀɴ ᴏɴ ᴛʜᴇ ᴠᴏɪᴄᴇ ᴄʜᴀᴛ ᴏғ ʏᴏᴜʀ ʟᴏɢ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ.\n\nᴀɴɴɪᴇ ʙᴏᴛ sᴛᴏᴘᴘᴇᴅ..."
+    # ✅ Attempt to stream startup media
+    call = await JARVIS.get_call(config.LOGGER_ID) if hasattr(config, "LOGGER_ID") else None
+    if call:
+        try:
+            await JARVIS.stream_call(
+                "https://te.legra.ph/file/29f784eb49d230ab62e9e.mp4"
+            )
+        except Exception as e:
+            LOGGER("ANNIEMUSIC").error(f"⚠️ Could not stream startup media: {e}")
+    else:
+        LOGGER("ANNIEMUSIC").warning(
+            "⚠️ No active voice chat found in your log group/channel. Please start a VC manually."
         )
-        exit()
-    except:
-        pass
 
+    # ✅ Register decorators
     await JARVIS.decorators()
-    LOGGER("ANNIEMUSIC").info(
-        "\x41\x6e\x6e\x69\x65\x20\x4d\x75\x73\x69\x63\x20\x52\x6f\x62\x6f\x74\x20\x53\x74\x61\x72\x74\x65\x64\x20\x53\x75\x63\x63\x65\x73\x73\x66\x75\x6c\x6c\x79\x2e\x2e\x2e"
-    )
+    LOGGER("ANNIEMUSIC").info("🎶 Annie Music Robot started successfully!")
+
+    # ✅ Keep bot running
     await idle()
+
+    # ✅ Stop services
     await app.stop()
     await userbot.stop()
-    LOGGER("ANNIEMUSIC").info("sᴛᴏᴘᴘɪɴɢ ᴀɴɴɪᴇ ᴍᴜsɪᴄ ʙᴏᴛ ...")
+    LOGGER("ANNIEMUSIC").info("🛑 Annie Music Bot stopped.")
 
 
 if __name__ == "__main__":
