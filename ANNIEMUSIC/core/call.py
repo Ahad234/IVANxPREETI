@@ -1,92 +1,244 @@
-import asyncio
-import os
-from datetime import datetime, timedelta
-from typing import Union
+# ANNlEMUSIC/core/call.py
+# Compatible with PyTgCalls 3.x (and falls back to ntgcalls if present)
 
-from pytgcalls.exceptions import TelegramServerError
+import asyncio
+from typing import Optional, List
+
 from pyrogram import Client
 from pyrogram.errors import FloodWait, ChatAdminRequired
-from pyrogram.types import InlineKeyboardMarkup
-from pytgcalls import PyTgCalls
-from pytgcalls.exceptions import NoActiveGroupCall
-from pytgcalls.types import AudioQuality, ChatUpdate, MediaStream, StreamEnded, Update, VideoQuality
 
 import config
-from strings import get_string
-from ANNIEMUSIC import LOGGER, YouTube, app
-from ANNIEMUSIC.misc import db
-from ANNIEMUSIC.utils.database import (
-    add_active_chat,
-    add_active_video_chat,
-    get_lang,
-    get_loop,
-    group_assistant,
-    is_autoend,
-    music_on,
-    remove_active_chat,
-    remove_active_video_chat,
-    set_loop,
-)
-from ANNIEMUSIC.utils.exceptions import AssistantErr
-from ANNIEMUSIC.utils.formatters import check_duration, seconds_to_min, speed_converter
-from ANNIEMUSIC.utils.inline.play import stream_markup
-from ANNIEMUSIC.utils.stream.autoclear import auto_clean
-from ANNIEMUSIC.utils.thumbnails import get_thumb
-from ANNIEMUSIC.utils.errors import capture_internal_err, send_large_error
+from ANNIEMUSIC import LOGGER
 
-autoend = {}
-counter = {}
+# --- Dynamic import for pytgcalls v3 / ntgcalls ------------------------------
+# We try the PyTgCalls 3.x API first. If not available, try ntgcalls with the
+# same surface API. We also handle where AudioPiped/VideoPiped are exposed.
+PYTG_BACKEND = "pytgcalls"
 
-
-def dynamic_media_stream(path: str, video: bool = False, ffmpeg_params: str = None) -> MediaStream:
-    return MediaStream(
-        audio_path=path,
-        media_path=path,
-        audio_parameters=AudioQuality.MEDIUM if video else AudioQuality.STUDIO,
-        video_parameters=VideoQuality.HD_720p if video else VideoQuality.SD_360p,
-        video_flags=(MediaStream.Flags.AUTO_DETECT if video else MediaStream.Flags.IGNORE),
-        ffmpeg_parameters=ffmpeg_params,
-    )
-
-
-async def _clear_(chat_id: int) -> None:
-    popped = db.pop(chat_id, None)
-    if popped:
-        await auto_clean(popped)
-    db[chat_id] = []
-    await remove_active_video_chat(chat_id)
-    await remove_active_chat(chat_id)
-    await set_loop(chat_id, 0)
+try:
+    from pytgcalls import PyTgCalls
+    try:
+        from pytgcalls import AudioPiped, VideoPiped
+    except Exception:
+        # some builds keep these under types.input_stream
+        from pytgcalls.types.input_stream import AudioPiped, VideoPiped
+except Exception:
+    # fallback to ntgcalls
+    from ntgcalls import PyTgCalls  # type: ignore
+    try:
+        from ntgcalls import AudioPiped, VideoPiped  # type: ignore
+    except Exception:
+        from ntgcalls.types.input_stream import AudioPiped, VideoPiped  # type: ignore
+    PYTG_BACKEND = "ntgcalls"
 
 
 class Call:
-    def __init__(self):
-        self.userbot1 = Client("AnnieXAssis1", config.API_ID, config.API_HASH, session_string=config.STRING1) if config.STRING1 else None
-        self.one = PyTgCalls(self.userbot1) if self.userbot1 else None
+    """
+    Multi-assistant voice client manager.
+    - Starts up to 5 userbot clients (from STRING1..STRING5)
+    - Starts matching PyTgCalls/ntgcalls instances
+    - Provides helpers to check VC status and stream audio/video
+    """
 
-        self.userbot2 = Client("AnnieXAssis2", config.API_ID, config.API_HASH, session_string=config.STRING2) if config.STRING2 else None
-        self.two = PyTgCalls(self.userbot2) if self.userbot2 else None
+    def __init__(self) -> None:
+        self.userbots: List[Optional[Client]] = []
+        self.calls: List[Optional[PyTgCalls]] = []
 
-        self.userbot3 = Client("AnnieXAssis3", config.API_ID, config.API_HASH, session_string=config.STRING3) if config.STRING3 else None
-        self.three = PyTgCalls(self.userbot3) if self.userbot3 else None
+        strings = [
+            ("AnnieXAssis1", config.STRING1),
+            ("AnnieXAssis2", config.STRING2),
+            ("AnnieXAssis3", config.STRING3),
+            ("AnnieXAssis4", config.STRING4),
+            ("AnnieXAssis5", config.STRING5),
+        ]
 
-        self.userbot4 = Client("AnnieXAssis4", config.API_ID, config.API_HASH, session_string=config.STRING4) if config.STRING4 else None
-        self.four = PyTgCalls(self.userbot4) if self.userbot4 else None
-
-        self.userbot5 = Client("AnnieXAssis5", config.API_ID, config.API_HASH, session_string=config.STRING5) if config.STRING5 else None
-        self.five = PyTgCalls(self.userbot5) if self.userbot5 else None
+        for name, sess in strings:
+            if sess:
+                cli = Client(
+                    name=name,
+                    api_id=config.API_ID,
+                    api_hash=config.API_HASH,
+                    session_string=sess,
+                )
+                self.userbots.append(cli)
+                self.calls.append(PyTgCalls(cli))
+            else:
+                self.userbots.append(None)
+                self.calls.append(None)
 
         self.active_calls: set[int] = set()
 
-    async def auto_start(self):
-        LOGGER(__name__).info("Auto-starting all Pyrogram Clients...")
-        for client in [self.userbot1, self.userbot2, self.userbot3, self.userbot4, self.userbot5]:
-            if client and not client.is_connected:
-                await client.start()
-        for call in [self.one, self.two, self.three, self.four, self.five]:
+    # ---------------- Core lifecycle ----------------
+
+    async def start(self) -> None:
+        """Start all available userbots and their group call clients."""
+        LOGGER(__name__).info(f"Starting assistants using backend: {PYTG_BACKEND}")
+        # Start pyrogram clients
+        for cli in self.userbots:
+            if cli and not cli.is_connected:
+                await cli.start()
+
+        # Start group call engines
+        for call in self.calls:
             if call:
                 await call.start()
 
-    # ... (all other methods remain the same)
+        LOGGER(__name__).info("All available assistants and call engines started.")
 
+    async def stop(self) -> None:
+        for call in self.calls:
+            if call:
+                try:
+                    await call.stop()
+                except Exception:
+                    pass
+        for cli in self.userbots:
+            if cli:
+                try:
+                    await cli.stop()
+                except Exception:
+                    pass
+
+    # ---------------- Helpers ----------------
+
+    def _pick_call(self) -> Optional[PyTgCalls]:
+        """Pick the first available call engine."""
+        for call in self.calls:
+            if call is not None:
+                return call
+        return None
+
+    async def get_call(self, chat_id: int):
+        """
+        Return call info for this chat, or None if there is no active VC.
+        PyTgCalls 3.x exposes `get_call`. ntgcalls mirrors it; if not,
+        we treat absence as 'no call'.
+        """
+        call = self._pick_call()
+        if not call:
+            return None
+        try:
+            return await call.get_call(chat_id)  # type: ignore[attr-defined]
+        except AttributeError:
+            # backend lacks get_call — consider no active call
+            return None
+        except Exception:
+            return None
+
+    async def ensure_vc(self, chat_id: int) -> bool:
+        """Check if a VC is active in the chat (without relying on old exceptions)."""
+        info = await self.get_call(chat_id)
+        return bool(info)
+
+    # ---------------- Streaming ----------------
+
+    async def join(self, chat_id: int, source: str, video: bool = False) -> bool:
+        """
+        Join a VC and start streaming an audio (default) or video source.
+        `source` can be a local file path or a URL handled by ffmpeg.
+        """
+        call = self._pick_call()
+        if not call:
+            LOGGER(__name__).error("No available call client (PyTgCalls/ntgcalls not initialized).")
+            return False
+
+        try:
+            if video:
+                stream = VideoPiped(source)
+            else:
+                stream = AudioPiped(source)
+
+            await call.join_group_call(chat_id, stream)
+            self.active_calls.add(chat_id)
+            return True
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+            return await self.join(chat_id, source, video)
+        except ChatAdminRequired:
+            LOGGER(__name__).error("Bot/assistant is not admin or lacks 'Manage Video Chats' permission.")
+            return False
+        except Exception as e:
+            LOGGER(__name__).error(f"Failed to join/stream in chat {chat_id}: {e}")
+            return False
+
+    async def change_stream(self, chat_id: int, source: str, video: bool = False) -> bool:
+        """
+        Change the active stream in the VC.
+        """
+        call = self._pick_call()
+        if not call:
+            return False
+
+        try:
+            if video:
+                stream = VideoPiped(source)
+            else:
+                stream = AudioPiped(source)
+
+            # v3 exposes change_stream; if missing, re-join instead.
+            if hasattr(call, "change_stream"):
+                await call.change_stream(chat_id, stream)  # type: ignore[attr-defined]
+            else:
+                # Fallback: leave and re-join
+                await self.leave(chat_id)
+                await self.join(chat_id, source, video)
+            return True
+        except Exception as e:
+            LOGGER(__name__).error(f"Failed to change stream in chat {chat_id}: {e}")
+            return False
+
+    async def leave(self, chat_id: int) -> bool:
+        """
+        Leave the VC for a chat.
+        """
+        call = self._pick_call()
+        if not call:
+            return False
+        try:
+            # Some backends expose leave_group_call, others stop_stream
+            if hasattr(call, "leave_group_call"):
+                await call.leave_group_call(chat_id)  # type: ignore[attr-defined]
+            elif hasattr(call, "stop_stream"):
+                await call.stop_stream(chat_id)  # type: ignore[attr-defined]
+            self.active_calls.discard(chat_id)
+            return True
+        except Exception as e:
+            LOGGER(__name__).error(f"Failed to leave VC in chat {chat_id}: {e}")
+            return False
+
+    # ---------------- High-level convenience used by your main.py ----------------
+
+    async def stream_call(self, source: str, chat_id: Optional[int] = None, video: bool = False) -> bool:
+        """
+        High-level helper that either starts or switches the stream
+        in the configured log chat (or provided chat_id).
+        """
+        # If you have a configured log group/channel ID for auto start:
+        if chat_id is None and hasattr(config, "LOGGER_ID"):
+            chat_id = int(getattr(config, "LOGGER_ID"))
+
+        if chat_id is None:
+            LOGGER(__name__).warning("No chat_id provided and config.LOGGER_ID is missing.")
+            return False
+
+        # If VC is already active, change the stream; else, join fresh
+        if await self.ensure_vc(chat_id):
+            return await self.change_stream(chat_id, source, video)
+        return await self.join(chat_id, source, video)
+
+    async def decorators(self):
+        """
+        Hook to register any event handlers / decorators you need elsewhere.
+        Kept for interface compatibility with your existing code.
+        """
+        # You can add update listeners here if needed, e.g.:
+        # call = self._pick_call()
+        # if call and hasattr(call, "on_update"):
+        #     @call.on_update()
+        #     async def _(update):
+        #         ...
+        return
+
+
+# Export singleton as in your original code
 JARVIS = Call()
